@@ -29,6 +29,10 @@ async def echo(message: types.Message):
     await message.answer(message.text)
 
 async def main():
+    await bot.set_my_commands([
+        types.BotCommand(command="start", description="Старт"),
+        types.BotCommand(command="pic", description="Отправить картинку"),
+    ])
     # запуск бота
     await dp.start_polling(bot)
 
