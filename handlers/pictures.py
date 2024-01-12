@@ -7,4 +7,4 @@ pictures_router = Router()
 @pictures_router.message(Command("pic"))
 async def send_pic(message: types.Message):
     photo = types.FSInputFile("images/cat.jpg")
-    await message.answer_photo(photo=photo, caption="Довольный котик!")
+    await message.reply_photo(photo=photo, caption="Довольный котик!")
