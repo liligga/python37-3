@@ -1,38 +1,21 @@
 import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from dotenv import load_dotenv
-from os import getenv
+from aiogram import types
 import logging
-from pprint import pprint
+from bot import bot, dp, set_commands
+from handlers import (
+    start_router,
+    pictures_router,
+    echo_router
+)
 
-
-load_dotenv()
-TOKEN = getenv("BOT_TOKEN")
-bot = Bot(token=TOKEN)
-dp = Dispatcher()
-
-@dp.message(Command("pic"))
-async def send_pic(message: types.Message):
-    photo = types.FSInputFile("images/cat.jpg")
-    await message.answer_photo(photo=photo, caption="Довольный котик!")
-
-# обработка команды
-# handler
-@dp.message(Command("start"))
-async def start(message: types.Message):
-    pprint(message)
-    await message.answer(f"Привет! {message.from_user.full_name}, ваш id: {message.from_user.id}")
-
-@dp.message()
-async def echo(message: types.Message):
-    await message.answer(message.text)
 
 async def main():
-    await bot.set_my_commands([
-        types.BotCommand(command="start", description="Старт"),
-        types.BotCommand(command="pic", description="Отправить картинку"),
-    ])
+    await set_commands()
+    dp.include_router(start_router)
+    dp.include_router(pictures_router)
+    # в самом конце
+    dp.include_router(echo_router)
+
     # запуск бота
     await dp.start_polling(bot)
 
