@@ -19,4 +19,5 @@ async def set_commands():
         types.BotCommand(command="start", description="Старт"),
         types.BotCommand(command="pic", description="Отправить картинку"),
         types.BotCommand(command="courses", description="Наши курсы"),
+        types.BotCommand(command="lesson", description="Записаться на пробный урок"),
     ])
