@@ -4,6 +4,9 @@ from pprint import pprint
 
 
 def init_db():
+    """
+    Создается соединение с БД и курсор
+    """
     global db, cursor
     db = sqlite3.connect(
         Path(__file__).parent.parent / "db.sqlite"
@@ -11,6 +14,9 @@ def init_db():
     cursor = db.cursor()
 
 def create_tables():
+    """
+    Создание таблиц
+    """
     cursor.execute("""
         --sql
         DROP TABLE IF EXISTS courses;
@@ -40,6 +46,9 @@ def create_tables():
     db.commit()
 
 def populate_db():
+    """
+    Заполнение таблиц
+    """
     cursor.execute("""
         --sql
         INSERT INTO courses (name, description, duration) VALUES
@@ -60,6 +69,9 @@ def populate_db():
 
 
 def get_courses():
+    """
+    Получение данных о всех курсах
+    """
     cursor.execute("""
         --sql
         SELECT * FROM courses
@@ -69,6 +81,9 @@ def get_courses():
 
 
 def get_courses_with_teachers():
+    """
+    Получение данных о курсах и их преподавателях
+    """
     cursor.execute("""
         --sql
         SELECT c.name, t.name FROM courses AS c
@@ -87,12 +102,48 @@ def get_teachers():
 
 
 def get_course_data(id: int):
+    """
+    Получение данных о курсе и его преподавателе по id курса
+    """
+    # cursor.execute("""
+    #     --sql
+    #     SELECT name, description, duration FROM courses
+    #     WHERE id = :cid
+    # """, {"cid": id})
     cursor.execute("""
         --sql
-        SELECT name, description, duration FROM courses
-        WHERE id = :cid
+        SELECT c.name, c.description, c.duration, t.name FROM courses AS c
+        JOIN teachers AS t ON c.id = t.course_id
+        WHERE c.id = :cid
     """, {"cid": id})
     return cursor.fetchone()
+
+
+def get_course_data_by_name(name: str):
+    """
+    Получение данных о курсе и его преподавателе по названию курса
+    """
+    cursor.execute("""
+        --sql
+        SELECT c.name, c.description, c.duration, t.name FROM courses AS c
+        JOIN teachers AS t ON c.id = t.course_id
+        WHERE c.name = :cname
+    """, {"cname": name})
+    return cursor.fetchone()
+
+
+def get_teachers_by_course_name(name: str):
+    """
+    Получение имен проподвателей по названию курса
+    """
+    cursor.execute("""
+        --sql
+        SELECT teachers.name FROM teachers 
+        WHERE teachers.course_id = (
+            SELECT id FROM courses WHERE name = :cname
+        )
+    """, {"cname": name})
+    return cursor.fetchall()
 
 
 if __name__ == "__main__":
@@ -102,7 +153,8 @@ if __name__ == "__main__":
     # pprint(get_courses())
     # pprint(get_courses_with_teachers())
     # pprint(get_teachers())
-    pprint(get_course_data(1))
+    # pprint(get_course_data(1))
+    pprint(get_teachers_by_course_name("Бекенд"))
 
 # SQL - Structured Query Language Структурированный язык запросов
 # СУБД - Система управления базами данных

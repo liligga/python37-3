@@ -1,6 +1,6 @@
 from aiogram import Router, F, types
 from aiogram.filters import Command
-from db.queries import get_teachers, get_course_data
+from db.queries import get_teachers, get_course_data, get_course_data_by_name
 
 
 courses_router = Router()
@@ -34,6 +34,7 @@ async def show_teachers(message: types.Message):
 
 @courses_router.message(F.text.lower() == "backend")
 async def about_python(message: types.Message):
-    course = get_course_data(1)
+    # course = get_course_data(1)
+    course = get_course_data_by_name("Бекенд")
     kb = types.ReplyKeyboardRemove()
-    await message.answer(f"Название: {course[0]}\nОписание: {course[1]}\nПродолжительность: {course[2]} часов", reply_markup=kb)
+    await message.answer(f"Название: {course[0]}\nОписание: {course[1]}\nПродолжительность: {course[2]} месяцев\nПреподаватель: {course[3]}", reply_markup=kb)
