@@ -11,6 +11,7 @@ from handlers import (
 )
 from db.queries import init_db, create_tables, populate_db
 
+
 async def on_startup(dispatcher):
     print('Бот вышел в онлайн')
     init_db()

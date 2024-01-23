@@ -1,34 +1,39 @@
 from aiogram import Router, F, types
 from aiogram.filters import Command
-from db.queries import get_courses
+from db.queries import get_teachers, get_course_data
+
 
 courses_router = Router()
 
 @courses_router.message(Command("courses"))
 async def show_courses(message: types.Message):
-    courses = get_courses()
-    buttons = list(map())
     # keyboard
     kb = types.ReplyKeyboardMarkup(
         keyboard=[
-            # [
-            #     types.KeyboardButton(text="Python"),
-            #     types.KeyboardButton(text="Frontend"),
-            # ],
-            # [
-            #     types.KeyboardButton(text="Android"),
-            #     types.KeyboardButton(text="iOS"),
-            # ],
-            # [
-            #     types.KeyboardButton(text="Тестирование"),
-            # ]
+            [
+                types.KeyboardButton(text="Backend"),
+                types.KeyboardButton(text="Frontend"),
+            ],
+            [
+                types.KeyboardButton(text="Android"),
+                types.KeyboardButton(text="iOS"),
+            ],
+            [
+                types.KeyboardButton(text="Тестирование"),
+            ]
         ],
         resize_keyboard=True
     )
     await message.answer("Выберите направление:", reply_markup=kb)
 
 
-@courses_router.message(F.text.lower() == "python")
+@courses_router.message(F.text.lower() == "преподаватели")
+async def show_teachers(message: types.Message):
+    teachers = get_teachers()
+
+
+@courses_router.message(F.text.lower() == "backend")
 async def about_python(message: types.Message):
+    course = get_course_data(1)
     kb = types.ReplyKeyboardRemove()
-    await message.answer("Курс по Python", reply_markup=kb)
+    await message.answer(f"Название: {course[0]}\nОписание: {course[1]}\nПродолжительность: {course[2]} часов", reply_markup=kb)
