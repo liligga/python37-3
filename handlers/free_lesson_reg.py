@@ -2,36 +2,21 @@ from aiogram import Router, F, types
 from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from keyboards.courses_keyboard import napravlenie_kb
+from db.queries import save_free_lesson_data
 
 
 free_lesson_reg_router = Router()
 # FSM - Finite State Machine
 # Конечный автомат
+
+
 class FreeLessonReg(StatesGroup):
     name = State()
     age = State()
     napravlenie = State()
     phone = State()
 
-def napravlenie_kb():
-    # DRY Don't Repeat Yourself
-    kb = types.ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                types.KeyboardButton(text="Backend"),
-                types.KeyboardButton(text="Frontend")
-            ],
-            [
-                types.KeyboardButton(text="iOS"),
-                types.KeyboardButton(text="Android")
-            ],
-            [
-                types.KeyboardButton(text="Тестирование"),
-                types.KeyboardButton(text="Менеджмент проектов")
-            ]
-        ]
-    )
-    return kb
 
 @free_lesson_reg_router.message(Command("lesson"))
 async def start_registration(message: types.Message, state: FSMContext):
@@ -69,7 +54,7 @@ async def process_age(message: types.Message, state: FSMContext):
 
 @free_lesson_reg_router.message(FreeLessonReg.napravlenie)
 async def process_napravlenie(message: types.Message, state: FSMContext):
-    await state.update_data(napravlenie=message.text)
+    await state.update_data(course=message.text)
     hide_kb = types.ReplyKeyboardRemove()
     await state.set_state(FreeLessonReg.phone)
     await message.answer("Ваш номер телефона?", reply_markup=hide_kb)
@@ -78,9 +63,10 @@ async def process_napravlenie(message: types.Message, state: FSMContext):
 @free_lesson_reg_router.message(FreeLessonReg.phone)
 async def process_phone(message: types.Message, state: FSMContext):
     await state.update_data(phone=message.text)
-    data = await state.get_data()
+    data = await state.get_data()    
     await message.answer(f"Ваши данные: {data}")
     await message.answer("Спасибо за регистрацию! Мы с Вами свяжемся")
     # Save To DataBase (DB)
+    save_free_lesson_data(data)
     # очистка состояний
     await state.clear()

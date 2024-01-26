@@ -23,8 +23,8 @@ async def main():
     await set_commands()
     dp.include_router(start_router)
     dp.include_router(pictures_router)
-    dp.include_router(courses_router)
     dp.include_router(free_lesson_reg_router)
+    dp.include_router(courses_router)
     
     # в самом конце
     dp.include_router(echo_router)

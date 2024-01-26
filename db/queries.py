@@ -40,7 +40,18 @@ def create_tables():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             course_id INTEGER,
+            photo TEXT,
             FOREIGN KEY (course_id) REFERENCES courses(id)
+        )
+    """)
+    cursor.execute("""
+        --sql
+        CREATE TABLE IF NOT EXISTS free_lesson (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            age INTEGER,
+            course TEXT,
+            phone TEXT
         )
     """)
     db.commit()
@@ -60,10 +71,10 @@ def populate_db():
         """
     )
     cursor.execute("""
-        INSERT INTO teachers (name, course_id) VALUES
-        ("Adilet", 1),
-        ("Igor", 2),
-        ("Alexey", 5)
+        INSERT INTO teachers (name, photo, course_id) VALUES
+        ("Adilet", "images/cat.jpg", 1),
+        ("Igor", "images/cat.jpg", 2),
+        ("Alexey", "images/cat.jpg", 5)
     """)
     db.commit()
 
@@ -144,6 +155,15 @@ def get_teachers_by_course_name(name: str):
         )
     """, {"cname": name})
     return cursor.fetchall()
+
+
+def save_free_lesson_data(data: dict):
+    cursor.execute("""
+        --sql
+        INSERT INTO free_lesson (name, age, course, phone) VALUES
+        (:name, :age, :course, :phone)
+    """, data)
+    db.commit()
 
 
 if __name__ == "__main__":
