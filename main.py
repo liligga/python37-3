@@ -8,7 +8,8 @@ from handlers import (
     courses_router,
     echo_router,
     free_lesson_reg_router,
-    scheduler_router
+    scheduler_router,
+    group_administration_router
 )
 from db.queries import init_db, create_tables, populate_db
 
@@ -27,6 +28,7 @@ async def main():
     dp.include_router(free_lesson_reg_router)
     dp.include_router(courses_router)
     dp.include_router(scheduler_router)
+    dp.include_router(group_administration_router)
     
     # в самом конце
     dp.include_router(echo_router)
